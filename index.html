@@ -1,509 +1,451 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-    <title>A/L MCQ Bot – Register</title>
-    
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    
-    <style>
-        /* --- CSS Reset & Variables --- */
-        *, *::before, *::after {
-            box-sizing: border-box;
-        }
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <title>A/L MCQ Bot – Register</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    /* Fix width overflow/overlap and ensure consistent sizing */
+    *, *::before, *::after { box-sizing: border-box; }
 
-        :root {
-            --bg: #0b0d12;
-            --card: #111420;
-            --text: #f3f5f7;
-            --muted: #b9c0cc;
-            --border: #243044;
-            --primary: #4f8cff;
-            --danger: #ff5c5c;
-            --success: #6ee7b7;
-            --radius-lg: 16px;
-            --radius: 12px;
-            --shadow: 0 10px 30px rgba(0,0,0,0.25);
-            --gap: 12px;
-        }
+    :root {
+      --bg: #0b0d12;
+      --card: #111420;
+      --text: #f3f5f7;
+      --muted: #b9c0cc;
+      --border: #243044;
+      --primary: #4f8cff;
+      --danger: #ff5c5c;
+      --success: #6ee7b7;
+      --radius-lg: 16px;
+      --radius: 12px;
+      --shadow: 0 10px 30px rgba(0,0,0,0.25);
+      --gap: 12px;
+    }
 
-        html, body {
-            height: 100%;
-            margin: 0;
-            background: var(--bg);
-            color: var(--text);
-            font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, "Helvetica Neue", Arial, "Apple Color Emoji", "Segoe UI Emoji";
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-        }
+    html, body {
+      height: 100%;
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, "Helvetica Neue", Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
 
-        body {
-            padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom);
-            overflow-y: auto;
-            -webkit-overflow-scrolling: touch;
-        }
+    body {
+      padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom);
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
 
-        /* --- Layout Wrappers --- */
-        .wrap {
-            width: 100%;
-            max-width: 420px;
-            margin: 0 auto;
-            padding: 12px;
-        }
+    .wrap {
+      width: 100%;
+      max-width: 420px;
+      margin: 0 auto;
+      padding: 12px;
+    }
 
-        .stack {
-            display: grid;
-            grid-auto-rows: min-content;
-            gap: var(--gap);
-        }
+    .hero {
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      background: linear-gradient(135deg, #407BFF 0%, #7a4cff 50%, #C03CFF 100%);
+      padding: 16px;
+    }
 
-        /* --- Hero Section --- */
-        .hero {
-            border-radius: var(--radius-lg);
-            overflow: hidden;
-            box-shadow: var(--shadow);
-            background: linear-gradient(135deg, #407BFF 0%, #7a4cff 50%, #C03CFF 100%);
-            padding: 16px;
-        }
+    .hero-header {
+      margin-bottom: 10px;
+    }
 
-        .hero-header {
-            margin-bottom: 10px;
-        }
+    .title {
+      font-size: 18px;
+      font-weight: 800;
+      margin: 0 0 4px 0;
+      color: #fff;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.25);
+    }
+    .subtitle {
+      margin: 0;
+      color: #f0f3ff;
+      opacity: 0.95;
+      font-size: 13px;
+      font-weight: 500;
+    }
 
-        .title {
-            font-size: 18px;
-            font-weight: 800;
-            margin: 0 0 4px 0;
-            color: #fff;
-            text-shadow: 0 2px 8px rgba(0,0,0,0.25);
-        }
+    .card {
+      background: var(--card);
+      border-radius: var(--radius-lg);
+      border: 1px solid rgba(255,255,255,0.04);
+      padding: 14px;
+    }
 
-        .subtitle {
-            margin: 0;
-            color: #f0f3ff;
-            opacity: 0.95;
-            font-size: 13px;
-            font-weight: 500;
-        }
+    /* Stack layout to prevent overlaps */
+    .stack {
+      display: grid;
+      grid-auto-rows: min-content;
+      gap: var(--gap);
+    }
 
-        /* --- Card & Components --- */
-        .card {
-            background: var(--card);
-            border-radius: var(--radius-lg);
-            border: 1px solid rgba(255,255,255,0.04);
-            padding: 14px;
-        }
+    .who {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--muted);
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 8px 10px;
+      width: 100%;
+    }
+    .badge {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid var(--border);
+      color: #cbd5e1;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      font-size: 11px;
+    }
 
-        .who {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 12px;
-            color: var(--muted);
-            background: rgba(255,255,255,0.03);
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            padding: 8px 10px;
-            width: 100%;
-        }
+    .section-label {
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
 
-        .badge {
-            display: inline-block;
-            padding: 3px 8px;
-            border-radius: 999px;
-            background: rgba(255,255,255,0.06);
-            border: 1px solid var(--border);
-            color: #cbd5e1;
-            font-weight: 700;
-            letter-spacing: 0.02em;
-            font-size: 11px;
-        }
+    .row-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--gap);
+      width: 100%;
+    }
 
-        .section-label {
-            font-size: 12px;
-            color: var(--muted);
-            font-weight: 700;
-            letter-spacing: 0.02em;
-        }
+    input, select, button {
+      font: inherit;
+    }
 
-        /* --- Inputs & Buttons --- */
-        input, select, button {
-            font: inherit;
-        }
+    input, select {
+      width: 100%;
+      padding: 12px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      outline: none;
+      background: #0b1020;
+      color: var(--text);
+      font-size: 14px;
+      transition: border-color .15s ease, box-shadow .15s ease, background .15s ease;
+    }
+    input::placeholder { color: #6b7280; }
+    input:focus, select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(79, 140, 255, 0.2);
+      background: #0a0f1e;
+    }
 
-        input, select {
-            width: 100%;
-            padding: 12px;
-            border-radius: var(--radius);
-            border: 1px solid var(--border);
-            outline: none;
-            background: #0b1020;
-            color: var(--text);
-            font-size: 14px;
-            transition: border-color .15s ease, box-shadow .15s ease, background .15s ease;
-        }
+    /* Stream toggle */
+    .stream-toggle {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--gap);
+      width: 100%;
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px 8px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: #0b1020;
+      color: var(--text);
+      cursor: pointer;
+      user-select: none;
+      font-weight: 700;
+      width: 100%;
+      transition: all .15s ease;
+    }
+    .pill:hover { border-color: #334155; }
+    .pill.active {
+      background: rgba(79, 140, 255, 0.15);
+      border-color: var(--primary);
+      box-shadow: inset 0 0 0 2px rgba(79, 140, 255, 0.25);
+      color: #e8f1ff;
+    }
 
-        input::placeholder { color: #6b7280; }
+    .select-wrap { width: 100%; }
+    .select-wrap select {
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      background-image:
+        linear-gradient(45deg, transparent 50%, #9fb6ff 50%),
+        linear-gradient(135deg, #9fb6ff 50%, transparent 50%);
+      background-position:
+        calc(100% - 24px) 50%,
+        calc(100% - 18px) 50%;
+      background-size: 6px 6px, 6px 6px;
+      background-repeat: no-repeat;
+    }
 
-        input:focus, select:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(79, 140, 255, 0.2);
-            background: #0a0f1e;
-        }
+    .actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--gap);
+      width: 100%;
+    }
+    .btn {
+      padding: 12px 14px;
+      border-radius: var(--radius);
+      border: 0;
+      font-weight: 800;
+      cursor: pointer;
+      color: #fff;
+      transition: transform .05s ease, filter .15s ease, box-shadow .15s ease;
+      width: 100%;
+    }
+    .btn:active { transform: translateY(1px); }
+    .btn-primary {
+      background: var(--primary);
+      box-shadow: 0 6px 18px rgba(79, 140, 255, 0.25);
+    }
+    .btn-danger {
+      background: var(--danger);
+      box-shadow: 0 6px 18px rgba(255, 92, 92, 0.25);
+    }
 
-        /* Stream Toggle Pills */
-        .stream-toggle {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: var(--gap);
-            width: 100%;
-        }
-
-        .pill {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            padding: 12px 8px;
-            border: 1px solid var(--border);
-            border-radius: 14px;
-            background: #0b1020;
-            color: var(--text);
-            cursor: pointer;
-            user-select: none;
-            font-weight: 700;
-            width: 100%;
-            transition: all .15s ease;
-        }
-
-        .pill:hover { border-color: #334155; }
-        
-        .pill.active {
-            background: rgba(79, 140, 255, 0.15);
-            border-color: var(--primary);
-            box-shadow: inset 0 0 0 2px rgba(79, 140, 255, 0.25);
-            color: #e8f1ff;
-        }
-
-        /* Custom Select */
-        .select-wrap { width: 100%; }
-        .select-wrap select {
-            appearance: none;
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            background-image:
-                linear-gradient(45deg, transparent 50%, #9fb6ff 50%),
-                linear-gradient(135deg, #9fb6ff 50%, transparent 50%);
-            background-position:
-                calc(100% - 24px) 50%,
-                calc(100% - 18px) 50%;
-            background-size: 6px 6px, 6px 6px;
-            background-repeat: no-repeat;
-        }
-
-        /* Action Buttons */
-        .actions {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: var(--gap);
-            width: 100%;
-        }
-
-        .btn {
-            padding: 12px 14px;
-            border-radius: var(--radius);
-            border: 0;
-            font-weight: 800;
-            cursor: pointer;
-            color: #fff;
-            transition: transform .05s ease, filter .15s ease, box-shadow .15s ease;
-            width: 100%;
-        }
-
-        .btn:active { transform: translateY(1px); }
-
-        .btn-primary {
-            background: var(--primary);
-            box-shadow: 0 6px 18px rgba(79, 140, 255, 0.25);
-        }
-
-        .btn-danger {
-            background: var(--danger);
-            box-shadow: 0 6px 18px rgba(255, 92, 92, 0.25);
-        }
-
-        .status {
-            font-size: 12px;
-            color: var(--muted);
-            min-height: 16px;
-        }
-    </style>
+    .status {
+      font-size: 12px;
+      color: var(--muted);
+      min-height: 16px;
+    }
+  </style>
 </head>
-
 <body>
-    <div class="wrap">
-        <div class="hero">
-            <div class="hero-header">
-                <h1 class="title">A/L MCQ Bot – Register</h1>
-                <p class="subtitle">Connect your Telegram account to your student profile.</p>
-            </div>
+  <div class="wrap">
+    <div class="hero">
+      <div class="hero-header">
+        <h1 class="title">A/L MCQ Bot – Register</h1>
+        <p class="subtitle">Connect your Telegram account to your student profile.</p>
+      </div>
 
-            <div class="card">
-                <div class="stack">
-                    <div id="who" class="who">Telegram user: <span id="whoName" class="badge">Loading…</span></div>
-                    
-                    <div class="section-label">First name</div>
-                    <input id="first_name" type="text" placeholder="First name" />
-                    
-                    <div class="section-label">Last name</div>
-                    <input id="last_name" type="text" placeholder="Last name" />
-                    
-                    <div class="section-label">Stream</div>
-                    <div class="stream-toggle">
-                        <div id="btnBio" class="pill">Bio</div>
-                        <div id="btnMaths" class="pill">Maths</div>
-                    </div>
-                    
-                    <div class="section-label">Exam year</div>
-                    <div class="select-wrap">
-                        <select id="exam_year">
-                            <option value="">Select exam year</option>
-                            <option value="2026">2026 A/L (26AL)</option>
-                            <option value="2027">2027 A/L (27AL)</option>
-                            <option value="2028">2028 A/L (28AL)</option>
-                            <option value="2029">2029 A/L (29AL)</option>
-                        </select>
-                    </div>
-                    
-                    <div class="actions">
-                        <button class="btn btn-danger" id="cancelBtn">Cancel</button>
-                        <button class="btn btn-primary" id="saveBtn">Save</button>
-                    </div>
-                    
-                    <div id="status" class="status"></div>
-                </div>
-            </div>
+      <div class="card">
+        <div class="stack">
+          <div id="who" class="who">Telegram user: <span id="whoName" class="badge">Loading…</span></div>
+
+          <div class="section-label">First name</div>
+          <input id="first_name" type="text" placeholder="First name" />
+
+          <div class="section-label">Last name</div>
+          <input id="last_name" type="text" placeholder="Last name" />
+
+          <div class="section-label">Stream</div>
+          <div class="stream-toggle">
+            <div id="btnBio" class="pill">Bio</div>
+            <div id="btnMaths" class="pill">Maths</div>
+          </div>
+
+          <div class="section-label">Exam year</div>
+          <div class="select-wrap">
+            <select id="exam_year">
+              <option value="">Select exam year</option>
+              <option value="2026">2026 A/L (26AL)</option>
+              <option value="2027">2027 A/L (27AL)</option>
+              <option value="2028">2028 A/L (28AL)</option>
+              <option value="2029">2029 A/L (29AL)</option>
+            </select>
+          </div>
+
+          <div class="actions">
+            <button class="btn btn-danger" id="cancelBtn">Cancel</button>
+            <button class="btn btn-primary" id="saveBtn">Save</button>
+          </div>
+
+          <div id="status" class="status"></div>
         </div>
+      </div>
     </div>
+  </div>
 
-    <script>
-        // --- CONFIGURATION ---
-        // REQUIRED: Replace with your actual Supabase project details
-        const SUPABASE_URL = 'https://YOUR-PROJECT.supabase.co';
-        const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_PUBLIC_KEY';
-        
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        const tg = window.Telegram?.WebApp;
-        
-        // Expand the web app to full height
-        tg?.expand();
+  <script>
+    // REQUIRED: set your Supabase project details
+    const SUPABASE_URL = 'https://YOUR-PROJECT.supabase.co';
+    const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_PUBLIC_KEY';
 
-        // --- THEME HANDLING ---
-        function applyTheme() {
-            if (!tg) return;
-            const tp = tg.themeParams || {};
-            const set = (k, v) => document.documentElement.style.setProperty(k, v);
-            
-            if (tp.bg_color) set('--bg', tp.bg_color);
-            if (tp.secondary_bg_color) set('--card', tp.secondary_bg_color);
-            if (tp.text_color) set('--text', tp.text_color);
-            if (tp.hint_color) set('--muted', tp.hint_color);
-            if (tp.link_color) set('--primary', tp.link_color);
-            if (tp.section_separator_color) set('--border', tp.section_separator_color);
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const tg = window.Telegram?.WebApp;
+    tg?.expand();
+
+    // Apply Telegram theme to variables
+    function applyTheme() {
+      if (!tg) return;
+      const tp = tg.themeParams || {};
+      const set = (k, v) => document.documentElement.style.setProperty(k, v);
+      if (tp.bg_color) set('--bg', tp.bg_color);
+      if (tp.secondary_bg_color) set('--card', tp.secondary_bg_color);
+      if (tp.text_color) set('--text', tp.text_color);
+      if (tp.hint_color) set('--muted', tp.hint_color);
+      if (tp.link_color) set('--primary', tp.link_color);
+      if (tp.section_separator_color) set('--border', tp.section_separator_color);
+    }
+    applyTheme();
+
+    // Elements
+    const els = {
+      whoName: document.getElementById('whoName'),
+      first: document.getElementById('first_name'),
+      last: document.getElementById('last_name'),
+      btnBio: document.getElementById('btnBio'),
+      btnMaths: document.getElementById('btnMaths'),
+      examYear: document.getElementById('exam_year'),
+      cancel: document.getElementById('cancelBtn'),
+      save: document.getElementById('saveBtn'),
+      status: document.getElementById('status'),
+    };
+
+    // Stream toggle
+    let stream = '';
+    function setStream(s) {
+      stream = s;
+      els.btnBio.classList.toggle('active', s === 'Bio');
+      els.btnMaths.classList.toggle('active', s === 'Maths');
+    }
+    els.btnBio.addEventListener('click', () => setStream('Bio'));
+    els.btnMaths.addEventListener('click', () => setStream('Maths'));
+
+    function getTelegramUser() {
+      const user = tg?.initDataUnsafe?.user;
+      if (user) return user;
+      const p = new URLSearchParams(location.search);
+      return {
+        id: Number(p.get('tg_id')) || null,
+        first_name: p.get('first') || '',
+        last_name: p.get('last') || '',
+        username: p.get('username') || ''
+      };
+    }
+
+    function setStatus(msg, ok=false) {
+      els.status.textContent = msg || '';
+      els.status.style.color = ok ? 'var(--success)' : 'var(--muted)';
+    }
+
+    async function loadProfile() {
+      const u = getTelegramUser();
+      if (!u?.id) {
+        setStatus('Open this page from the bot to load your Telegram ID.');
+        els.whoName.textContent = 'Unknown user';
+        return;
+      }
+      els.whoName.textContent = [u.first_name, u.last_name].filter(Boolean).join(' ') || (u.username ? '@'+u.username : u.id);
+
+      try {
+        const { data, error } = await supabase
+          .from('students')
+          .select('id, first_name, last_name, full_name, stream, exam_year, grade')
+          .eq('telegram_id', u.id)
+          .maybeSingle();
+        if (error) throw error;
+
+        if (data) {
+          if (data.first_name || data.last_name) {
+            els.first.value = data.first_name || '';
+            els.last.value = data.last_name || '';
+          } else if (data.full_name) {
+            const parts = String(data.full_name).trim().split(/\s+/);
+            els.first.value = parts[0] || '';
+            els.last.value = parts.slice(1).join(' ') || '';
+          } else {
+            els.first.value = u.first_name || '';
+            els.last.value = u.last_name || '';
+          }
+
+          if (data.stream === 'Bio' || data.stream === 'Maths') setStream(data.stream);
+          else setStream('');
+
+          if (data.exam_year) els.examYear.value = String(data.exam_year);
+          else els.examYear.value = '';
+
+          setStatus('Profile loaded.');
+        } else {
+          els.first.value = u.first_name || '';
+          els.last.value = u.last_name || '';
+          setStream('');
+          els.examYear.value = '';
+          setStatus('No profile yet — fill and save.');
         }
-        applyTheme();
+      } catch (e) {
+        console.error(e);
+        setStatus('Failed to load profile.');
+      }
+    }
 
-        // --- DOM ELEMENTS ---
-        const els = {
-            whoName: document.getElementById('whoName'),
-            first: document.getElementById('first_name'),
-            last: document.getElementById('last_name'),
-            btnBio: document.getElementById('btnBio'),
-            btnMaths: document.getElementById('btnMaths'),
-            examYear: document.getElementById('exam_year'),
-            cancel: document.getElementById('cancelBtn'),
-            save: document.getElementById('saveBtn'),
-            status: document.getElementById('status'),
-        };
+    function getExamYearLabel(y) {
+      const map = {
+        '2026': '2026 A/L (26AL)',
+        '2027': '2027 A/L (27AL)',
+        '2028': '2028 A/L (28AL)',
+        '2029': '2029 A/L (29AL)',
+      };
+      return map[String(y)] || null;
+    }
 
-        // --- STREAM TOGGLE LOGIC ---
-        let stream = '';
-        
-        function setStream(s) {
-            stream = s;
-            els.btnBio.classList.toggle('active', s === 'Bio');
-            els.btnMaths.classList.toggle('active', s === 'Maths');
+    async function saveProfile() {
+      const u = getTelegramUser();
+      if (!u?.id) {
+        setStatus('Missing Telegram ID. Please open from bot.');
+        return;
+      }
+      const first = els.first.value.trim();
+      const last = els.last.value.trim();
+      const ey = els.examYear.value.trim();
+
+      if (!first || !last) { setStatus('Please enter your first and last name.'); return; }
+      if (!stream) { setStatus('Please select your stream.'); return; }
+      if (!ey) { setStatus('Please select your exam year.'); return; }
+
+      const full_name = `${first} ${last}`.trim();
+      const exam_year_label = getExamYearLabel(ey);
+
+      const payload = {
+        telegram_id: u.id,
+        first_name: first,
+        last_name: last,
+        full_name,
+        stream,
+        exam_year: Number(ey),
+        exam_year_label
+      };
+
+      setStatus('Saving...');
+      try {
+        let { error } = await supabase.from('students').upsert(payload, { onConflict: 'telegram_id' });
+        if (error) {
+          // Fallback for legacy schema (no first_name/last_name/exam_year)
+          const legacy = { telegram_id: u.id, full_name, stream, grade: exam_year_label || ey };
+          const { error: err2 } = await supabase.from('students').upsert(legacy, { onConflict: 'telegram_id' });
+          if (err2) throw err2;
         }
-        
-        els.btnBio.addEventListener('click', () => setStream('Bio'));
-        els.btnMaths.addEventListener('click', () => setStream('Maths'));
+        setStatus('Saved successfully!', true);
+        try {
+          tg?.showPopup({ title: 'Profile Updated', message: 'Your profile was saved successfully.', buttons: [{ id: 'ok', type: 'close', text: 'OK' }] }, () => tg?.close());
+        } catch { setTimeout(() => tg?.close(), 500); }
+      } catch (e) {
+        console.error(e);
+        setStatus('Save failed. Please try again.');
+      }
+    }
 
-        // --- HELPER FUNCTIONS ---
-        function getTelegramUser() {
-            const user = tg?.initDataUnsafe?.user;
-            if (user) return user;
-            
-            // Fallback for testing in browser via URL params
-            const p = new URLSearchParams(location.search);
-            return {
-                id: Number(p.get('tg_id')) || null,
-                first_name: p.get('first') || '',
-                last_name: p.get('last') || '',
-                username: p.get('username') || ''
-            };
-        }
+    document.getElementById('cancelBtn').addEventListener('click', () => tg?.close());
+    document.getElementById('saveBtn').addEventListener('click', saveProfile);
 
-        function setStatus(msg, ok = false) {
-            els.status.textContent = msg || '';
-            els.status.style.color = ok ? 'var(--success)' : 'var(--muted)';
-        }
-
-        function getExamYearLabel(y) {
-            const map = {
-                '2026': '2026 A/L (26AL)',
-                '2027': '2027 A/L (27AL)',
-                '2028': '2028 A/L (28AL)',
-                '2029': '2029 A/L (29AL)',
-            };
-            return map[String(y)] || null;
-        }
-
-        // --- MAIN ACTIONS ---
-        async function loadProfile() {
-            const u = getTelegramUser();
-            if (!u?.id) {
-                setStatus('Open this page from the bot to load your Telegram ID.');
-                els.whoName.textContent = 'Unknown user';
-                return;
-            }
-
-            els.whoName.textContent = [u.first_name, u.last_name].filter(Boolean).join(' ') || (u.username ? '@' + u.username : u.id);
-
-            try {
-                const { data, error } = await supabase
-                    .from('students')
-                    .select('id, first_name, last_name, full_name, stream, exam_year, grade')
-                    .eq('telegram_id', u.id)
-                    .maybeSingle();
-
-                if (error) throw error;
-
-                if (data) {
-                    // Populate fields
-                    if (data.first_name || data.last_name) {
-                        els.first.value = data.first_name || '';
-                        els.last.value = data.last_name || '';
-                    } else if (data.full_name) {
-                        // Attempt to split legacy full_name
-                        const parts = String(data.full_name).trim().split(/\s+/);
-                        els.first.value = parts[0] || '';
-                        els.last.value = parts.slice(1).join(' ') || '';
-                    } else {
-                        els.first.value = u.first_name || '';
-                        els.last.value = u.last_name || '';
-                    }
-
-                    if (data.stream === 'Bio' || data.stream === 'Maths') setStream(data.stream);
-                    else setStream('');
-
-                    if (data.exam_year) els.examYear.value = String(data.exam_year);
-                    else els.examYear.value = '';
-
-                    setStatus('Profile loaded.');
-                } else {
-                    // No profile exists yet
-                    els.first.value = u.first_name || '';
-                    els.last.value = u.last_name || '';
-                    setStream('');
-                    els.examYear.value = '';
-                    setStatus('No profile yet — fill and save.');
-                }
-            } catch (e) {
-                console.error(e);
-                setStatus('Failed to load profile.');
-            }
-        }
-
-        async function saveProfile() {
-            const u = getTelegramUser();
-            if (!u?.id) {
-                setStatus('Missing Telegram ID. Please open from bot.');
-                return;
-            }
-
-            const first = els.first.value.trim();
-            const last = els.last.value.trim();
-            const ey = els.examYear.value.trim();
-
-            if (!first || !last) {
-                setStatus('Please enter your first and last name.');
-                return;
-            }
-            if (!stream) {
-                setStatus('Please select your stream.');
-                return;
-            }
-            if (!ey) {
-                setStatus('Please select your exam year.');
-                return;
-            }
-
-            const full_name = `${first} ${last}`.trim();
-            const exam_year_label = getExamYearLabel(ey);
-
-            const payload = {
-                telegram_id: u.id,
-                first_name: first,
-                last_name: last,
-                full_name,
-                stream,
-                exam_year: Number(ey),
-                exam_year_label
-            };
-
-            setStatus('Saving...');
-
-            try {
-                let { error } = await supabase.from('students').upsert(payload, { onConflict: 'telegram_id' });
-
-                if (error) {
-                    console.warn('Upsert failed, trying legacy schema fallback...', error);
-                    // Fallback for legacy schema (no first_name/last_name/exam_year columns)
-                    const legacy = {
-                        telegram_id: u.id,
-                        full_name,
-                        stream,
-                        grade: exam_year_label || ey
-                    };
-                    const { error: err2 } = await supabase.from('students').upsert(legacy, { onConflict: 'telegram_id' });
-                    if (err2) throw err2;
-                }
-
-                setStatus('Saved successfully!', true);
-
-                try {
-                    tg?.showPopup({
-                        title: 'Profile Updated',
-                        message: 'Your profile was saved successfully.',
-                        buttons: [{ id: 'ok', type: 'close', text: 'OK' }]
-                    }, () => tg?.close());
-                } catch {
-                    setTimeout(() => tg?.close(), 500);
-                }
-
-            } catch (e) {
-                console.error(e);
-                setStatus('Save failed. Please try again.');
-            }
-        }
-
-        // --- EVENT LISTENERS ---
-        document.getElementById('cancelBtn').addEventListener('click', () => tg?.close());
-        document.getElementById('saveBtn').addEventListener('click', saveProfile);
-
-        // --- INIT ---
-        loadProfile();
-    </script>
+    loadProfile();
+  </script>
 </body>
 </html>
