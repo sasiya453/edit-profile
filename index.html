@@ -6,151 +6,384 @@
     name="viewport"
     content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
   />
-  <title>Edit Profile</title>
+  <title>A/L MCQ Bot – Register</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     :root {
-      --bg: #0f0f0f;
-      --card: #1b1b1b;
-      --text: #eaeaea;
-      --muted: #b0b0b0;
-      --primary: #2ea5ff;
+      --bg: #0b0d12;
+      --card: #111420;
+      --text: #f3f5f7;
+      --muted: #b9c0cc;
+      --border: #243044;
+      --primary: #4f8cff;
+      --primary-strong: #376ef0;
+      --accent: #9b5cff;
       --danger: #ff5c5c;
+      --success: #6ee7b7;
+      --radius: 16px;
+      --radius-sm: 12px;
+      --shadow: 0 10px 30px rgba(0,0,0,0.25);
     }
-    body {
-      margin: 0; padding: 16px; font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, "Helvetica Neue", Arial, "Apple Color Emoji", "Segoe UI Emoji";
-      background: var(--bg); color: var(--text);
+
+    html, body {
+      height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, "Helvetica Neue", Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      margin: 0;
     }
-    .card {
-      background: var(--card); border-radius: 12px; padding: 16px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+
+    .wrap {
+      max-width: 420px;
+      margin: 0 auto;
+      padding: 16px;
     }
-    h1 { font-size: 18px; margin: 0 0 12px; }
-    label { display: block; font-size: 13px; color: var(--muted); margin: 10px 0 6px; }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      background: linear-gradient(135deg, #407BFF 0%, #7a4cff 50%, #C03CFF 100%);
+      padding: 20px 18px 0;
+      min-height: 110px;
+    }
+
+    .hero-card {
+      background: var(--card);
+      margin-top: 14px;
+      border-top-left-radius: var(--radius);
+      border-top-right-radius: var(--radius);
+      border-bottom-left-radius: var(--radius);
+      border-bottom-right-radius: var(--radius);
+      padding: 16px;
+      border: 1px solid rgba(255,255,255,0.04);
+    }
+
+    .title {
+      font-size: 18px;
+      font-weight: 800;
+      margin: 0 0 4px 0;
+      color: #fff;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.25);
+    }
+
+    .subtitle {
+      margin: 0;
+      color: #f0f3ff;
+      opacity: 0.95;
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .section-label {
+      font-size: 12px;
+      color: var(--muted);
+      margin: 14px 0 8px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      text-transform: none;
+    }
+
+    .row-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
     input, select {
-      width: 100%; padding: 10px 12px; border-radius: 10px; border: 1px solid #333; outline: none;
-      background: #111; color: var(--text);
+      width: 100%;
+      padding: 12px 12px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      outline: none;
+      background: #0b1020;
+      color: var(--text);
+      font-size: 14px;
+      transition: border-color .15s ease, box-shadow .15s ease, background .15s ease;
     }
-    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    .actions { display: flex; gap: 10px; margin-top: 16px; }
+    input::placeholder { color: #6b7280; }
+    input:focus, select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(79, 140, 255, 0.2);
+      background: #0a0f1e;
+    }
+
+    /* Stream toggle */
+    .stream-toggle {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px 8px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: #0b1020;
+      color: var(--text);
+      cursor: pointer;
+      user-select: none;
+      font-weight: 700;
+      transition: all .15s ease;
+    }
+    .pill:hover { border-color: #334155; }
+    .pill.active {
+      background: rgba(79, 140, 255, 0.15);
+      border-color: var(--primary);
+      box-shadow: inset 0 0 0 2px rgba(79, 140, 255, 0.25);
+      color: #e8f1ff;
+    }
+
+    .select-wrap {
+      position: relative;
+    }
+    .select-wrap select {
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      background-image:
+        linear-gradient(45deg, transparent 50%, #9fb6ff 50%),
+        linear-gradient(135deg, #9fb6ff 50%, transparent 50%);
+      background-position:
+        calc(100% - 24px) 50%,
+        calc(100% - 18px) 50%;
+      background-size: 6px 6px, 6px 6px;
+      background-repeat: no-repeat;
+    }
+
+    .actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 14px;
+    }
     .btn {
-      flex: 1; padding: 12px 14px; border: 0; border-radius: 10px; color: #fff; cursor: pointer; font-weight: 600;
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 0;
+      font-weight: 800;
+      cursor: pointer;
+      color: #fff;
+      transition: transform .05s ease, filter .15s ease, box-shadow .15s ease;
     }
-    .btn-primary { background: var(--primary); }
-    .btn-danger { background: var(--danger); }
-    .status { margin-top: 10px; font-size: 13px; color: var(--muted); }
+    .btn:active { transform: translateY(1px); }
+    .btn-primary {
+      background: var(--primary);
+      box-shadow: 0 6px 18px rgba(79, 140, 255, 0.25);
+    }
+    .btn-primary:hover { filter: brightness(1.05); }
+    .btn-danger {
+      background: var(--danger);
+      box-shadow: 0 6px 18px rgba(255, 92, 92, 0.25);
+    }
+
+    .status {
+      margin-top: 10px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .hint {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 6px;
+    }
+
+    /* Small note area showing Telegram user */
+    .who {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 12px; color: var(--muted);
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 8px 10px;
+      margin-bottom: 2px;
+    }
+    .badge {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid var(--border);
+      color: #cbd5e1;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      font-size: 11px;
+    }
   </style>
 </head>
 <body>
-  <div class="card">
-    <h1>✏️ Edit Profile</h1>
-    <div id="who">
-      <span class="status">Loading your profile...</span>
-    </div>
+  <div class="wrap">
+    <div class="hero">
+      <h1 class="title">A/L MCQ Bot – Register</h1>
+      <p class="subtitle">Connect your Telegram account to your student profile.</p>
 
-    <label for="full_name">Full Name</label>
-    <input id="full_name" type="text" placeholder="Your full name" />
+      <div class="hero-card">
+        <div id="who" class="who">Telegram user: <span id="whoName" class="badge">Loading…</span></div>
 
-    <div class="row">
-      <div>
-        <label for="stream">Stream</label>
-        <select id="stream">
-          <option value="">Select</option>
-          <option value="Physics">Physics</option>
-          <option value="Chemistry">Chemistry</option>
-          <option value="Bio">Bio</option>
-          <option value="Maths">Maths</option>
-        </select>
+        <div class="section-label">First name</div>
+        <input id="first_name" type="text" placeholder="First name" />
+
+        <div class="section-label">Last name</div>
+        <input id="last_name" type="text" placeholder="Last name" />
+
+        <div class="section-label" style="margin-top:14px;">Stream</div>
+        <div class="stream-toggle">
+          <div id="btnBio" class="pill">Bio</div>
+          <div id="btnMaths" class="pill">Maths</div>
+        </div>
+
+        <div class="section-label" style="margin-top:14px;">Exam year</div>
+        <div class="select-wrap">
+          <select id="exam_year">
+            <option value="">Select exam year</option>
+            <option value="2026">2026 A/L (26AL)</option>
+            <option value="2027">2027 A/L (27AL)</option>
+            <option value="2028">2028 A/L (28AL)</option>
+            <option value="2029">2029 A/L (29AL)</option>
+          </select>
+        </div>
+
+        <div class="actions">
+          <button class="btn btn-danger" id="cancelBtn">Cancel</button>
+          <button class="btn btn-primary" id="saveBtn">Save</button>
+        </div>
+
+        <div id="status" class="status"></div>
+        <div class="hint">Tip: Use the Cancel button to close the Web App without saving.</div>
       </div>
-      <div>
-        <label for="grade">Grade</label>
-        <select id="grade">
-          <option value="">Select</option>
-          <option value="12">12</option>
-          <option value="13">13</option>
-        </select>
-      </div>
     </div>
-
-    <div class="actions">
-      <button class="btn btn-danger" id="cancelBtn">Cancel</button>
-      <button class="btn btn-primary" id="saveBtn">Save Changes</button>
-    </div>
-
-    <div id="status" class="status"></div>
   </div>
 
   <script>
-    // REQUIRED: replace with your Supabase project values
-    const SUPABASE_URL = 'https://vjraalkgeczipftszzes.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZqcmFhbGtnZWN6aXBmdHN6emVzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUxMDE0ODgsImV4cCI6MjA4MDY3NzQ4OH0.zCn5NrGwBhPkLGyQEmi1RsLI8YMh4su9Oyq243SVQG8';
+    // REQUIRED: set your Supabase project details
+    const SUPABASE_URL = 'https://YOUR-PROJECT.supabase.co';
+    const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_PUBLIC_KEY';
 
     const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     const tg = window.Telegram?.WebApp;
     tg?.expand();
 
-    const params = new URLSearchParams(location.search);
-    function getUserId() {
-      // Prefer Telegram initData
-      const uid = tg?.initDataUnsafe?.user?.id;
-      if (uid) return Number(uid);
-      // Fallback to query param if testing in browser
-      const qp = params.get('tg_id');
-      return qp ? Number(qp) : null;
-    }
+    // UI elements
+    const els = {
+      whoName: document.getElementById('whoName'),
+      first: document.getElementById('first_name'),
+      last: document.getElementById('last_name'),
+      btnBio: document.getElementById('btnBio'),
+      btnMaths: document.getElementById('btnMaths'),
+      examYear: document.getElementById('exam_year'),
+      cancel: document.getElementById('cancelBtn'),
+      save: document.getElementById('saveBtn'),
+      status: document.getElementById('status'),
+    };
 
+    // Apply Telegram theme if available
     function applyTheme() {
       if (!tg) return;
       const tp = tg.themeParams || {};
-      document.documentElement.style.setProperty('--bg', tp.bg_color || '#0f0f0f');
-      document.documentElement.style.setProperty('--card', tp.secondary_bg_color || '#1b1b1b');
-      document.documentElement.style.setProperty('--text', tp.text_color || '#eaeaea');
-      document.documentElement.style.setProperty('--muted', tp.hint_color || '#b0b0b0');
-      document.documentElement.style.setProperty('--primary', tp.link_color || '#2ea5ff');
+      const set = (k, v) => document.documentElement.style.setProperty(k, v);
+      if (tp.bg_color) set('--bg', tp.bg_color);
+      if (tp.secondary_bg_color) set('--card', tp.secondary_bg_color);
+      if (tp.text_color) set('--text', tp.text_color);
+      if (tp.hint_color) set('--muted', tp.hint_color);
+      if (tp.link_color) set('--primary', tp.link_color);
+      // soften border color for dark/light themes
+      set('--border', tp.section_separator_color || 'rgba(255,255,255,0.08)');
     }
-
     applyTheme();
 
-    const els = {
-      full_name: document.getElementById('full_name'),
-      stream: document.getElementById('stream'),
-      grade: document.getElementById('grade'),
-      status: document.getElementById('status'),
-      who: document.getElementById('who'),
-      cancelBtn: document.getElementById('cancelBtn'),
-      saveBtn: document.getElementById('saveBtn'),
-    };
+    // Stream state
+    let stream = '';
+
+    function setStream(s) {
+      stream = s;
+      els.btnBio.classList.toggle('active', s === 'Bio');
+      els.btnMaths.classList.toggle('active', s === 'Maths');
+    }
+
+    els.btnBio.addEventListener('click', () => setStream('Bio'));
+    els.btnMaths.addEventListener('click', () => setStream('Maths'));
+
+    function getTelegramUser() {
+      // Prefer Telegram initData
+      const user = tg?.initDataUnsafe?.user;
+      if (user) return user;
+
+      // Fallback for browser testing (pass ?tg_id=...&first=...&last=...)
+      const p = new URLSearchParams(location.search);
+      return {
+        id: Number(p.get('tg_id')) || null,
+        first_name: p.get('first') || '',
+        last_name: p.get('last') || '',
+        username: p.get('username') || ''
+      };
+    }
 
     function setStatus(msg, ok=false) {
       els.status.textContent = msg || '';
-      els.status.style.color = ok ? '#7CFC00' : getComputedStyle(document.documentElement).getPropertyValue('--muted');
+      els.status.style.color = ok ? 'var(--success)' : 'var(--muted)';
     }
 
+    // Load existing profile
     async function loadProfile() {
-      const telegramId = getUserId();
-      if (!telegramId) {
-        setStatus('Unable to determine your Telegram ID. Open this page from the bot.', false);
+      const u = getTelegramUser();
+      if (!u?.id) {
+        setStatus('Open this page from the bot to load your Telegram ID.');
+        els.whoName.textContent = 'Unknown user';
         return;
       }
 
+      els.whoName.textContent = [u.first_name, u.last_name].filter(Boolean).join(' ') || (u.username ? '@'+u.username : u.id);
+
       try {
-        els.who.innerHTML = `<span class="status">Telegram ID: <b>${telegramId}</b></span>`;
         const { data, error } = await supabase
           .from('students')
-          .select('id, full_name, stream, grade')
-          .eq('telegram_id', telegramId)
+          .select('id, first_name, last_name, full_name, stream, exam_year, grade')
+          .eq('telegram_id', u.id)
           .maybeSingle();
 
         if (error) throw error;
 
         if (data) {
-          els.full_name.value = data.full_name || '';
-          els.stream.value = data.stream || '';
-          els.grade.value = data.grade || '';
+          // Names
+          if (data.first_name || data.last_name) {
+            els.first.value = data.first_name || '';
+            els.last.value = data.last_name || '';
+          } else if (data.full_name) {
+            const parts = String(data.full_name).trim().split(/\s+/);
+            els.first.value = parts[0] || '';
+            els.last.value = parts.slice(1).join(' ') || '';
+          } else {
+            els.first.value = u.first_name || '';
+            els.last.value = u.last_name || '';
+          }
+
+          // Stream
+          if (data.stream === 'Bio' || data.stream === 'Maths') setStream(data.stream);
+          else setStream(''); // none
+
+          // Exam year
+          if (data.exam_year) els.examYear.value = String(data.exam_year);
+          else {
+            // Legacy: if "grade" has something like "2026 A/L (26AL)" leave blank
+            els.examYear.value = '';
+          }
+
           setStatus('Profile loaded.');
         } else {
-          setStatus('No profile found yet. Fill in and save to create one.');
+          // No row yet: prefill from Telegram names
+          els.first.value = u.first_name || '';
+          els.last.value = u.last_name || '';
+          setStream('');
+          els.examYear.value = '';
+          setStatus('No profile yet — fill and save.');
         }
       } catch (e) {
         console.error(e);
@@ -158,38 +391,78 @@
       }
     }
 
+    function getExamYearLabel(y) {
+      const map = {
+        '2026': '2026 A/L (26AL)',
+        '2027': '2027 A/L (27AL)',
+        '2028': '2028 A/L (28AL)',
+        '2029': '2029 A/L (29AL)',
+      };
+      return map[String(y)] || null;
+    }
+
     async function saveProfile() {
-      const telegramId = getUserId();
-      if (!telegramId) {
-        setStatus('Unable to determine your Telegram ID.', false);
+      const u = getTelegramUser();
+      if (!u?.id) {
+        setStatus('Missing Telegram ID. Please open from bot.');
         return;
       }
 
-      const full_name = els.full_name.value.trim();
-      const stream = els.stream.value;
-      const grade = els.grade.value;
+      const first = els.first.value.trim();
+      const last = els.last.value.trim();
+      const ey = els.examYear.value.trim();
 
-      if (!full_name || !stream || !grade) {
-        setStatus('Please fill all fields.');
+      if (!first || !last) {
+        setStatus('Please enter your first and last name.');
         return;
       }
+      if (!stream) {
+        setStatus('Please select your stream.');
+        return;
+      }
+      if (!ey) {
+        setStatus('Please select your exam year.');
+        return;
+      }
+
+      const full_name = `${first} ${last}`.trim();
+      const exam_year_label = getExamYearLabel(ey);
+
+      // Preferred payload (requires columns exist)
+      const payload = {
+        telegram_id: u.id,
+        first_name: first,
+        last_name: last,
+        full_name,
+        stream,
+        exam_year: Number(ey),     // numeric year
+        exam_year_label           // optional convenience label (add column if you like)
+      };
+
+      setStatus('Saving...');
 
       try {
-        setStatus('Saving...');
-        // Upsert by unique key telegram_id
-        const { error } = await supabase
+        // Attempt main upsert
+        let { error } = await supabase
           .from('students')
-          .upsert({
-            telegram_id: telegramId,
+          .upsert(payload, { onConflict: 'telegram_id' });
+
+        // Fallback for legacy schema without first_name/last_name/exam_year
+        if (error) {
+          console.warn('Upsert error, trying legacy fallback:', error?.message);
+          const legacy = {
+            telegram_id: u.id,
             full_name,
             stream,
-            grade
-          }, { onConflict: 'telegram_id' });
+            grade: exam_year_label || ey // store label in grade if that column exists
+          };
+          const { error: err2 } = await supabase
+            .from('students')
+            .upsert(legacy, { onConflict: 'telegram_id' });
+          if (err2) throw err2;
+        }
 
-        if (error) throw error;
-
-        setStatus('Saved! You can close this page.', true);
-        // Show a Telegram popup and close
+        setStatus('Saved successfully!', true);
         try {
           tg?.showPopup({
             title: 'Profile Updated',
@@ -205,14 +478,11 @@
       }
     }
 
-    els.cancelBtn.addEventListener('click', () => {
-      tg?.close();
-    });
+    // Events
+    els.cancel.addEventListener('click', () => tg?.close());
+    els.save.addEventListener('click', saveProfile);
 
-    els.saveBtn.addEventListener('click', () => {
-      saveProfile();
-    });
-
+    // Init
     loadProfile();
   </script>
 </body>
