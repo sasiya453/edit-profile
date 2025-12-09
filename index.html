@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+  />
+  <title>Edit Profile</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    :root {
+      --bg: #0f0f0f;
+      --card: #1b1b1b;
+      --text: #eaeaea;
+      --muted: #b0b0b0;
+      --primary: #2ea5ff;
+      --danger: #ff5c5c;
+    }
+    body {
+      margin: 0; padding: 16px; font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, "Helvetica Neue", Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      background: var(--bg); color: var(--text);
+    }
+    .card {
+      background: var(--card); border-radius: 12px; padding: 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+    h1 { font-size: 18px; margin: 0 0 12px; }
+    label { display: block; font-size: 13px; color: var(--muted); margin: 10px 0 6px; }
+    input, select {
+      width: 100%; padding: 10px 12px; border-radius: 10px; border: 1px solid #333; outline: none;
+      background: #111; color: var(--text);
+    }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .actions { display: flex; gap: 10px; margin-top: 16px; }
+    .btn {
+      flex: 1; padding: 12px 14px; border: 0; border-radius: 10px; color: #fff; cursor: pointer; font-weight: 600;
+    }
+    .btn-primary { background: var(--primary); }
+    .btn-danger { background: var(--danger); }
+    .status { margin-top: 10px; font-size: 13px; color: var(--muted); }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>✏️ Edit Profile</h1>
+    <div id="who">
+      <span class="status">Loading your profile...</span>
+    </div>
+
+    <label for="full_name">Full Name</label>
+    <input id="full_name" type="text" placeholder="Your full name" />
+
+    <div class="row">
+      <div>
+        <label for="stream">Stream</label>
+        <select id="stream">
+          <option value="">Select</option>
+          <option value="Physics">Physics</option>
+          <option value="Chemistry">Chemistry</option>
+          <option value="Bio">Bio</option>
+          <option value="Maths">Maths</option>
+        </select>
+      </div>
+      <div>
+        <label for="grade">Grade</label>
+        <select id="grade">
+          <option value="">Select</option>
+          <option value="12">12</option>
+          <option value="13">13</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="btn btn-danger" id="cancelBtn">Cancel</button>
+      <button class="btn btn-primary" id="saveBtn">Save Changes</button>
+    </div>
+
+    <div id="status" class="status"></div>
+  </div>
+
+  <script>
+    // REQUIRED: replace with your Supabase project values
+    const SUPABASE_URL = 'https://vjraalkgeczipftszzes.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZqcmFhbGtnZWN6aXBmdHN6emVzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUxMDE0ODgsImV4cCI6MjA4MDY3NzQ4OH0.zCn5NrGwBhPkLGyQEmi1RsLI8YMh4su9Oyq243SVQG8';
+
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const tg = window.Telegram?.WebApp;
+    tg?.expand();
+
+    const params = new URLSearchParams(location.search);
+    function getUserId() {
+      // Prefer Telegram initData
+      const uid = tg?.initDataUnsafe?.user?.id;
+      if (uid) return Number(uid);
+      // Fallback to query param if testing in browser
+      const qp = params.get('tg_id');
+      return qp ? Number(qp) : null;
+    }
+
+    function applyTheme() {
+      if (!tg) return;
+      const tp = tg.themeParams || {};
+      document.documentElement.style.setProperty('--bg', tp.bg_color || '#0f0f0f');
+      document.documentElement.style.setProperty('--card', tp.secondary_bg_color || '#1b1b1b');
+      document.documentElement.style.setProperty('--text', tp.text_color || '#eaeaea');
+      document.documentElement.style.setProperty('--muted', tp.hint_color || '#b0b0b0');
+      document.documentElement.style.setProperty('--primary', tp.link_color || '#2ea5ff');
+    }
+
+    applyTheme();
+
+    const els = {
+      full_name: document.getElementById('full_name'),
+      stream: document.getElementById('stream'),
+      grade: document.getElementById('grade'),
+      status: document.getElementById('status'),
+      who: document.getElementById('who'),
+      cancelBtn: document.getElementById('cancelBtn'),
+      saveBtn: document.getElementById('saveBtn'),
+    };
+
+    function setStatus(msg, ok=false) {
+      els.status.textContent = msg || '';
+      els.status.style.color = ok ? '#7CFC00' : getComputedStyle(document.documentElement).getPropertyValue('--muted');
+    }
+
+    async function loadProfile() {
+      const telegramId = getUserId();
+      if (!telegramId) {
+        setStatus('Unable to determine your Telegram ID. Open this page from the bot.', false);
+        return;
+      }
+
+      try {
+        els.who.innerHTML = `<span class="status">Telegram ID: <b>${telegramId}</b></span>`;
+        const { data, error } = await supabase
+          .from('students')
+          .select('id, full_name, stream, grade')
+          .eq('telegram_id', telegramId)
+          .maybeSingle();
+
+        if (error) throw error;
+
+        if (data) {
+          els.full_name.value = data.full_name || '';
+          els.stream.value = data.stream || '';
+          els.grade.value = data.grade || '';
+          setStatus('Profile loaded.');
+        } else {
+          setStatus('No profile found yet. Fill in and save to create one.');
+        }
+      } catch (e) {
+        console.error(e);
+        setStatus('Failed to load profile.');
+      }
+    }
+
+    async function saveProfile() {
+      const telegramId = getUserId();
+      if (!telegramId) {
+        setStatus('Unable to determine your Telegram ID.', false);
+        return;
+      }
+
+      const full_name = els.full_name.value.trim();
+      const stream = els.stream.value;
+      const grade = els.grade.value;
+
+      if (!full_name || !stream || !grade) {
+        setStatus('Please fill all fields.');
+        return;
+      }
+
+      try {
+        setStatus('Saving...');
+        // Upsert by unique key telegram_id
+        const { error } = await supabase
+          .from('students')
+          .upsert({
+            telegram_id: telegramId,
+            full_name,
+            stream,
+            grade
+          }, { onConflict: 'telegram_id' });
+
+        if (error) throw error;
+
+        setStatus('Saved! You can close this page.', true);
+        // Show a Telegram popup and close
+        try {
+          tg?.showPopup({
+            title: 'Profile Updated',
+            message: 'Your profile was saved successfully.',
+            buttons: [{ id: 'ok', type: 'close', text: 'OK' }]
+          }, () => tg?.close());
+        } catch {
+          setTimeout(() => tg?.close(), 500);
+        }
+      } catch (e) {
+        console.error(e);
+        setStatus('Save failed. Please try again.');
+      }
+    }
+
+    els.cancelBtn.addEventListener('click', () => {
+      tg?.close();
+    });
+
+    els.saveBtn.addEventListener('click', () => {
+      saveProfile();
+    });
+
+    loadProfile();
+  </script>
+</body>
+</html>
